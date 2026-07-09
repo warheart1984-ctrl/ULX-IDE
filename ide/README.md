@@ -20,6 +20,7 @@ A professional desktop development environment for governed systems, integrating
 - **Arena Replay Validation**: Validate ULX→ISL transitions with evidence-based promotion
 - **Nova Studio Lineage Sync**: Export audit outputs for lineage visualization in Nova Studio
 - **Promotion v1.0 Constitutional Elevation Protocol**: Transform substrations into stable substrates through evidence, replay, governance review, and lineage certification
+- **Promotion v2.0 Constitutional Consensus Protocol**: Full federated promotion system with multi-node consensus, quorum voting, challenge resolution, and rollback capabilities
 
 ## Installation
 

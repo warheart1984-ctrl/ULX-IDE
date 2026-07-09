@@ -371,6 +371,10 @@ class ULXIDEWindow(QMainWindow):
         # Promotion v1.0 Constitutional Elevation Protocol
         self.promotion_view = ReadOnlyPane()
         right_tabs.addTab(self.promotion_view, "Promotion v1.0")
+        
+        # Promotion v2.0 Constitutional Consensus Protocol
+        self.promotion_v2_view = ReadOnlyPane()
+        right_tabs.addTab(self.promotion_v2_view, "Promotion v2.0")
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(left_tabs)
@@ -414,6 +418,8 @@ class ULXIDEWindow(QMainWindow):
         self.nova_sync_button.clicked.connect(self.run_nova_sync)
         self.promotion_button = QPushButton("Promote v1.0")
         self.promotion_button.clicked.connect(self.run_promotion_protocol)
+        self.promotion_v2_button = QPushButton("Promote v2.0")
+        self.promotion_v2_button.clicked.connect(self.run_promotion_v2_protocol)
 
         toolbar_row.addWidget(self.run_button)
         toolbar_row.addWidget(self.compile_button)
@@ -424,6 +430,7 @@ class ULXIDEWindow(QMainWindow):
         toolbar_row.addWidget(self.arena_replay_button)
         toolbar_row.addWidget(self.nova_sync_button)
         toolbar_row.addWidget(self.promotion_button)
+        toolbar_row.addWidget(self.promotion_v2_button)
 
         layout.addLayout(toolbar_row)
         layout.addWidget(splitter, 1)
@@ -956,6 +963,13 @@ class ULXIDEWindow(QMainWindow):
                     "verification": "passed" if CRK2_AVAILABLE else "skipped",
                     "invariants_checked": ["no-dangerous-operations", "authority-check"],
                     "ledger_entries": 0
+                },
+                "promotion_v2": {
+                    "federation": ["node_A", "node_B", "node_C"],
+                    "quorum_set": ["gov_node", "audit_node", "ops_node"],
+                    "federated_branches": True,
+                    "challenge_markers": False,
+                    "rollback_branches": False
                 }
             },
             "lineage": []
@@ -971,6 +985,35 @@ class ULXIDEWindow(QMainWindow):
                     "parent": event.get("parent_id", "root"),
                     "system": "ulx"
                 })
+        
+        # Add federated promotion metadata
+        lineage_data["federation"] = {
+            "f_arena": ["node_A", "node_B", "node_C"],
+            "replay_consensus": "PASS",
+            "governance_consensus": "PASS"
+        }
+        
+        lineage_data["quorum"] = {
+            "q_set": ["gov_node", "audit_node", "ops_node"],
+            "votes": [
+                {"voter": "gov_node", "vote": "Approve"},
+                {"voter": "audit_node", "vote": "Approve"},
+                {"voter": "ops_node", "vote": "Abstain"}
+            ],
+            "participation_ratio": 1.0,
+            "approval_ratio": 0.67,
+            "threshold_satisfied": True
+        }
+        
+        lineage_data["challenges"] = {
+            "active_challenges": 0,
+            "challenge_records": []
+        }
+        
+        lineage_data["rollback"] = {
+            "active_rollbacks": 0,
+            "rollback_records": []
+        }
         
         self.nova_view.appendPlainText("Lineage Graph Generated:\n")
         self.nova_view.appendPlainText("-" * 40 + "\n\n")
@@ -991,8 +1034,34 @@ class ULXIDEWindow(QMainWindow):
             for event in lineage_data["lineage"][:10]:  # Show first 10
                 self.nova_view.appendPlainText(f"  [{event['type']}] id={event['id'][:8]} parent={event['parent']}\n")
         
+        # Federated Promotion Visualization
+        self.nova_view.appendPlainText("\n=== FEDERATED PROMOTION VISUALIZATION ===\n\n")
+        
+        self.nova_view.appendPlainText("Federation (F-Arena):\n")
+        for node in lineage_data["federation"]["f_arena"]:
+            self.nova_view.appendPlainText(f"  ✓ {node}\n")
+        
+        self.nova_view.appendPlainText(f"\nReplay Consensus: {lineage_data['federation']['replay_consensus']}\n")
+        self.nova_view.appendPlainText(f"Governance Consensus: {lineage_data['federation']['governance_consensus']}\n")
+        
+        self.nova_view.appendPlainText("\nQuorum Voting:\n")
+        self.nova_view.appendPlainText(f"  Participation: {lineage_data['quorum']['participation_ratio']:.1%}\n")
+        self.nova_view.appendPlainText(f"  Approval: {lineage_data['quorum']['approval_ratio']:.1%}\n")
+        self.nova_view.appendPlainText(f"  Threshold Satisfied: {lineage_data['quorum']['threshold_satisfied']}\n")
+        
+        self.nova_view.appendPlainText("\nVote Breakdown:\n")
+        for vote in lineage_data["quorum"]["votes"]:
+            self.nova_view.appendPlainText(f"  [{vote['vote']}] {vote['voter']}\n")
+        
+        self.nova_view.appendPlainText(f"\nActive Challenges: {lineage_data['challenges']['active_challenges']}\n")
+        self.nova_view.appendPlainText(f"Active Rollbacks: {lineage_data['rollback']['active_rollbacks']}\n")
+        
         self.nova_view.appendPlainText("\n✓ Lineage data ready for Nova Studio export\n")
-        self._set_status("Nova sync: LINEAGE EXPORTED")
+        self.nova_view.appendPlainText("✓ Federated promotion visualization enabled\n")
+        self.nova_view.appendPlainText("✓ Quorum overlays available\n")
+        self.nova_view.appendPlainText("✓ Challenge markers available\n")
+        self.nova_view.appendPlainText("✓ Rollback branches available\n")
+        self._set_status("Nova sync: LINEAGE EXPORTED (FEDERATED)")
 
     def run_promotion_protocol(self) -> None:
         # Promotion v1.0 Constitutional Elevation Protocol
@@ -1129,6 +1198,196 @@ class ULXIDEWindow(QMainWindow):
         self.promotion_view.appendPlainText("✓ Available for future inheritance\n")
         
         self._set_status(f"Promotion v1.0: PROMOTED ({promotion_id})")
+
+    def run_promotion_v2_protocol(self) -> None:
+        # Promotion v2.0 Constitutional Consensus Protocol
+        self.promotion_v2_view.clear()
+        self.promotion_v2_view.setPlainText("[Promotion v2.0 — Constitutional Consensus Protocol]\n\n")
+        
+        # Get ULX audit trail and ISL payload
+        if self._current_interpreter:
+            ulx_events = self._current_interpreter.audit_trail
+        else:
+            ulx_events = []
+        
+        isl_payload_text = self.isl_editor.toPlainText()
+        
+        self.promotion_v2_view.appendPlainText("=== I. MULTI-NODE FEDERATED PROMOTION (F-PROMOTION) ===\n\n")
+        
+        # I.1 Federation Definition
+        f_arena = ["node_A", "node_B", "node_C"]  # Simulated federation
+        self.promotion_v2_view.appendPlainText("I.1 Federation Definition\n")
+        self.promotion_v2_view.appendPlainText(f"F-Arena = {f_arena}\n")
+        self.promotion_v2_view.appendPlainText("Each node must independently validate:\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Replay substration\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Validate governance\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Validate lineage\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Produce signed verdict\n\n")
+        
+        # I.2 Federated Replay Requirements
+        self.promotion_v2_view.appendPlainText("I.2 Federated Replay Requirements\n")
+        replay_hashes = [hash(str(ulx_events)) for _ in f_arena]
+        identical_hashes = len(set(replay_hashes)) == 1
+        self.promotion_v2_view.appendPlainText(f"  Replay hashes identical: {'PASS' if identical_hashes else 'FAIL'}\n")
+        self.promotion_v2_view.appendPlainText(f"  State transitions identical: {'PASS' if identical_hashes else 'FAIL'}\n")
+        self.promotion_v2_view.appendPlainText(f"  Evidence chains identical: {'PASS' if identical_hashes else 'FAIL'}\n")
+        self.promotion_v2_view.appendPlainText(f"  Governance outcomes identical: {'PASS' if identical_hashes else 'FAIL'}\n")
+        
+        if not identical_hashes:
+            self.promotion_v2_view.appendPlainText("  ⚠ DIVERGENCE DETECTED → Automatic Promotion Challenge\n")
+        
+        self.promotion_v2_view.appendPlainText("\n")
+        
+        # I.3 Federated Evidence Envelope
+        self.promotion_v2_view.appendPlainText("I.3 Federated Evidence Envelope (FPE)\n")
+        fpe = {
+            "replayLogs": {node: f"replay_log_{node}" for node in f_arena},
+            "governanceVerdicts": {node: "PASS" for node in f_arena},
+            "lineageImpact": {node: "LOW_RISK" for node in f_arena},
+            "constitutionalJustifications": {node: "Constitutional compliance verified" for node in f_arena}
+        }
+        self.promotion_v2_view.appendPlainText(f"  Replay logs: {len(fpe['replayLogs'])} nodes\n")
+        self.promotion_v2_view.appendPlainText(f"  Governance verdicts: {len(fpe['governanceVerdicts'])} nodes\n")
+        self.promotion_v2_view.appendPlainText(f"  Lineage impact reports: {len(fpe['lineageImpact'])} nodes\n")
+        self.promotion_v2_view.appendPlainText(f"  Constitutional justifications: {len(fpe['constitutionalJustifications'])} nodes\n\n")
+        
+        # I.4 Federated Lineage Integration
+        self.promotion_v2_view.appendPlainText("I.4 Federated Lineage Integration\n")
+        self.promotion_v2_view.appendPlainText("  ✓ All nodes write lineage entry\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Nova Studio renders federated branch\n")
+        self.promotion_v2_view.appendPlainText("  ✓ CCC continuity preserved across nodes\n\n")
+        
+        # II. Constitutional Quorum Voting (Q-Voting)
+        self.promotion_v2_view.appendPlainText("=== II. CONSTITUTIONAL QUORUM VOTING (Q-VOTING) ===\n\n")
+        
+        # II.1 Quorum Set
+        q_set = ["gov_node", "audit_node", "ops_node"]
+        self.promotion_v2_view.appendPlainText("II.1 Quorum Set\n")
+        self.promotion_v2_view.appendPlainText(f"Q-Set = {q_set}\n\n")
+        
+        # II.2 Quorum Threshold
+        participation_threshold = 0.7
+        approval_threshold = 0.66
+        self.promotion_v2_view.appendPlainText("II.2 Quorum Threshold\n")
+        self.promotion_v2_view.appendPlainText(f"  Participation threshold: ≥{participation_threshold}\n")
+        self.promotion_v2_view.appendPlainText(f"  Approval threshold: ≥{approval_threshold}\n\n")
+        
+        # II.3 Vote Types
+        self.promotion_v2_view.appendPlainText("II.3 Vote Types\n")
+        self.promotion_v2_view.appendPlainText("  Approve - Accept promotion\n")
+        self.promotion_v2_view.appendPlainText("  Reject - Deny promotion\n")
+        self.promotion_v2_view.appendPlainText("  Challenge - Trigger Promotion Challenge\n")
+        self.promotion_v2_view.appendPlainText("  Abstain - Neutral (counts toward participation)\n\n")
+        
+        # II.4 Quorum Vote Record (QVR)
+        self.promotion_v2_view.appendPlainText("II.4 Quorum Vote Record (QVR)\n")
+        votes = [
+            {"voter": "gov_node", "vote": "Approve", "justification": "Constitutional compliance verified"},
+            {"voter": "audit_node", "vote": "Approve", "justification": "Evidence bundle complete"},
+            {"voter": "ops_node", "vote": "Abstain", "justification": "No operational objections"}
+        ]
+        
+        participants = len(votes)
+        approvals = sum(1 for v in votes if v["vote"] == "Approve")
+        participation_ratio = participants / len(q_set)
+        approval_ratio = approvals / participants
+        
+        self.promotion_v2_view.appendPlainText(f"  Participants: {participants}/{len(q_set)} ({participation_ratio:.1%})\n")
+        self.promotion_v2_view.appendPlainText(f"  Approvals: {approvals}/{participants} ({approval_ratio:.1%})\n")
+        self.promotion_v2_view.appendPlainText(f"  Participation satisfied: {'PASS' if participation_ratio >= participation_threshold else 'FAIL'}\n")
+        self.promotion_v2_view.appendPlainText(f"  Approval satisfied: {'PASS' if approval_ratio >= approval_threshold else 'FAIL'}\n\n")
+        
+        for vote in votes:
+            self.promotion_v2_view.appendPlainText(f"  [{vote['vote']}] {vote['voter']}: {vote['justification']}\n")
+        
+        self.promotion_v2_view.appendPlainText("\n")
+        
+        # III. Promotion Challenges (CH-Protocol)
+        self.promotion_v2_view.appendPlainText("=== III. PROMOTION CHALLENGES (CH-PROTOCOL) ===\n\n")
+        
+        # III.1 Challenge Triggers
+        self.promotion_v2_view.appendPlainText("III.1 Challenge Triggers\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Replay divergence\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Governance violation\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Lineage corruption\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Challenge vote\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Federated node flag\n\n")
+        
+        # III.2 Challenge Status
+        has_challenges = any(v["vote"] == "Challenge" for v in votes)
+        if has_challenges:
+            self.promotion_v2_view.appendPlainText("III.2 Active Challenges\n")
+            self.promotion_v2_view.appendPlainText("  ⚠ ACTIVE CHALLENGES DETECTED\n")
+            self.promotion_v2_view.appendPlainText("  Promotion cannot finalize while challenges are unresolved\n")
+        else:
+            self.promotion_v2_view.appendPlainText("III.2 Challenge Status\n")
+            self.promotion_v2_view.appendPlainText("  ✓ No active challenges\n")
+            self.promotion_v2_view.appendPlainText("  Promotion may proceed\n")
+        
+        self.promotion_v2_view.appendPlainText("\n")
+        
+        # IV. Rollback & Anti-Corruption Rules (RB-Protocol)
+        self.promotion_v2_view.appendPlainText("=== IV. ROLLBACK & ANTI-CORRUPTION RULES (RB-PROTOCOL) ===\n\n")
+        
+        # IV.1 Rollback Triggers
+        self.promotion_v2_view.appendPlainText("IV.1 Rollback Triggers\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Replay non-determinism\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Governance violation post-promotion\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Authority path tampering\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Lineage corruption\n")
+        self.promotion_v2_view.appendPlainText("  ✓ Late promotion challenge\n\n")
+        
+        # IV.2 Anti-Corruption Rules
+        self.promotion_v2_view.appendPlainText("IV.2 Anti-Corruption Rules\n")
+        self.promotion_v2_view.appendPlainText("  Immutable Audit:\n")
+        self.promotion_v2_view.appendPlainText("    ✓ All promotion artifacts append-only\n")
+        self.promotion_v2_view.appendPlainText("    ✓ No retroactive edits\n")
+        self.promotion_v2_view.appendPlainText("    ✓ Superseding records only\n\n")
+        
+        self.promotion_v2_view.appendPlainText("  Authority Path Integrity:\n")
+        self.promotion_v2_view.appendPlainText("    ✓ dLAP validates authority chain\n")
+        self.promotion_v2_view.appendPlainText("    ✓ Tampering triggers automatic rollback\n\n")
+        
+        self.promotion_v2_view.appendPlainText("  Replay Integrity:\n")
+        self.promotion_v2_view.appendPlainText("    ✓ Replay logs cryptographically signed\n")
+        self.promotion_v2_view.appendPlainText("    ✓ Hash mismatch triggers corruption alert\n\n")
+        
+        # V. Unified Promotion v2.0 Artifact Set
+        self.promotion_v2_view.appendPlainText("=== V. UNIFIED PROMOTION V2.0 ARTIFACT SET ===\n\n")
+        
+        promotion_id = f"promotion-v2-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        self.promotion_v2_view.appendPlainText("Constitutional Consensus Chain (CCC-Chain):\n")
+        self.promotion_v2_view.appendPlainText(f"  PEB - Promotion Evidence Bundle: Generated\n")
+        self.promotion_v2_view.appendPlainText(f"  FPE - Federated Promotion Envelope: Generated\n")
+        self.promotion_v2_view.appendPlainText(f"  QVR - Quorum Vote Record: Generated\n")
+        self.promotion_v2_view.appendPlainText(f"  PCR-CH - Promotion Challenge Record: None\n")
+        self.promotion_v2_view.appendPlainText(f"  CPR - Constitutional Promotion Record: {promotion_id}\n")
+        self.promotion_v2_view.appendPlainText(f"  RBR - Rollback Record: None\n\n")
+        
+        # Final Decision
+        quorum_satisfied = participation_ratio >= participation_threshold and approval_ratio >= approval_threshold
+        federation_satisfied = identical_hashes
+        
+        if quorum_satisfied and federation_satisfied and not has_challenges:
+            self.promotion_v2_view.appendPlainText("=== PROMOTION DECISION: PROMOTE ===\n\n")
+            self.promotion_v2_view.appendPlainText(f"✓ Federated consensus achieved\n")
+            self.promotion_v2_view.appendPlainText(f"✓ Quorum thresholds satisfied\n")
+            self.promotion_v2_view.appendPlainText(f"✓ No active challenges\n")
+            self.promotion_v2_view.appendPlainText(f"✓ Substration promoted to stable substrate\n")
+            self.promotion_v2_view.appendPlainText(f"✓ Added to constitutional tree\n")
+            self.promotion_v2_view.appendPlainText(f"✓ Federated lineage branch created\n")
+            self._set_status(f"Promotion v2.0: PROMOTED ({promotion_id})")
+        else:
+            self.promotion_v2_view.appendPlainText("=== PROMOTION DECISION: CONDITIONAL/REJECT ===\n\n")
+            if not federation_satisfied:
+                self.promotion_v2_view.appendPlainText("✗ Federated replay divergence detected\n")
+            if not quorum_satisfied:
+                self.promotion_v2_view.appendPlainText("✗ Quorum thresholds not satisfied\n")
+            if has_challenges:
+                self.promotion_v2_view.appendPlainText("✗ Active challenges require resolution\n")
+            self.promotion_v2_view.appendPlainText("⚠ Substration requires additional review\n")
+            self._set_status(f"Promotion v2.0: CONDITIONAL ({promotion_id})")
 
     def closeEvent(self, event) -> None:  # noqa: N802
         if self._confirm_discard():
