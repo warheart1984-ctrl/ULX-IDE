@@ -19,6 +19,7 @@ A professional desktop development environment for governed systems, integrating
 - **Constitutional Node Test Harness**: Simulate payloads and governance decisions to validate constitutional logic
 - **Arena Replay Validation**: Validate ULX→ISL transitions with evidence-based promotion
 - **Nova Studio Lineage Sync**: Export audit outputs for lineage visualization in Nova Studio
+- **Promotion v1.0 Constitutional Elevation Protocol**: Transform substrations into stable substrates through evidence, replay, governance review, and lineage certification
 
 ## Installation
 
