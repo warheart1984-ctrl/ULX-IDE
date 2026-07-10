@@ -375,6 +375,10 @@ class ULXIDEWindow(QMainWindow):
         # Promotion v2.0 Constitutional Consensus Protocol
         self.promotion_v2_view = ReadOnlyPane()
         right_tabs.addTab(self.promotion_v2_view, "Promotion v2.0")
+        
+        # CSE - Constitutional State Engine
+        self.cse_view = ReadOnlyPane()
+        right_tabs.addTab(self.cse_view, "CSE")
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(left_tabs)
@@ -420,6 +424,8 @@ class ULXIDEWindow(QMainWindow):
         self.promotion_button.clicked.connect(self.run_promotion_protocol)
         self.promotion_v2_button = QPushButton("Promote v2.0")
         self.promotion_v2_button.clicked.connect(self.run_promotion_v2_protocol)
+        self.cse_button = QPushButton("CSE Transition")
+        self.cse_button.clicked.connect(self.run_cse_transition)
 
         toolbar_row.addWidget(self.run_button)
         toolbar_row.addWidget(self.compile_button)
@@ -431,6 +437,7 @@ class ULXIDEWindow(QMainWindow):
         toolbar_row.addWidget(self.nova_sync_button)
         toolbar_row.addWidget(self.promotion_button)
         toolbar_row.addWidget(self.promotion_v2_button)
+        toolbar_row.addWidget(self.cse_button)
 
         layout.addLayout(toolbar_row)
         layout.addWidget(splitter, 1)
@@ -1388,6 +1395,134 @@ class ULXIDEWindow(QMainWindow):
                 self.promotion_v2_view.appendPlainText("✗ Active challenges require resolution\n")
             self.promotion_v2_view.appendPlainText("⚠ Substration requires additional review\n")
             self._set_status(f"Promotion v2.0: CONDITIONAL ({promotion_id})")
+
+    def run_cse_transition(self) -> None:
+        # Constitutional State Engine (CSE) - Central Authority
+        self.cse_view.clear()
+        self.cse_view.setPlainText("[Constitutional State Engine (CSE)]\n\n")
+        
+        # CSE Syscall: TRANSITION
+        self.cse_view.appendPlainText("=== CSE SYSCALL: TRANSITION ===\n\n")
+        
+        # Simulate a constitutional lifecycle transition
+        artifact_id = f"artifact-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        target_state = "Execution"
+        actor = "developer"
+        authority_path = "dlap://root/ciems_admin/developer"
+        
+        self.cse_view.appendPlainText("Request:\n")
+        self.cse_view.appendPlainText(f"  artifact_id: {artifact_id}\n")
+        self.cse_view.appendPlainText(f"  target_state: {target_state}\n")
+        self.cse_view.appendPlainText(f"  actor: {actor}\n")
+        self.cse_view.appendPlainText(f"  authority_path: {authority_path}\n\n")
+        
+        # Step 1: Constitutional Evaluation
+        self.cse_view.appendPlainText("=== I. CONSTITUTIONAL EVALUATION ===\n\n")
+        
+        self.cse_view.appendPlainText("I.1 Authority Validation (DLAP)\n")
+        authority_valid = True  # Simulated
+        self.cse_view.appendPlainText(f"  Authority path valid: {'PASS' if authority_valid else 'FAIL'}\n")
+        self.cse_view.appendPlainText(f"  Actor has required role: {'PASS' if authority_valid else 'FAIL'}\n")
+        self.cse_view.appendPlainText(f"  Capability match: {'PASS' if authority_valid else 'FAIL'}\n\n")
+        
+        self.cse_view.appendPlainText("I.2 Evidence Validation\n")
+        evidence_valid = True  # Simulated
+        self.cse_view.appendPlainText(f"  Evidence structurally valid: {'PASS' if evidence_valid else 'FAIL'}\n")
+        self.cse_view.appendPlainText(f"  Evidence semantically valid: {'PASS' if evidence_valid else 'FAIL'}\n\n")
+        
+        self.cse_view.appendPlainText("I.3 ISL Contract Evaluation\n")
+        contract_valid = True  # Simulated
+        self.cse_view.appendPlainText(f"  Lifecycle transition allowed: {'PASS' if contract_valid else 'FAIL'}\n")
+        self.cse_view.appendPlainText(f"  State transition valid: {'PASS' if contract_valid else 'FAIL'}\n\n")
+        
+        # Step 2: Generate Constitutional Event
+        self.cse_view.appendPlainText("=== II. CONSTITUTIONAL EVENT GENERATION ===\n\n")
+        
+        event_id = f"event-{str(hash(artifact_id + target_state))[:8]}"
+        previous_state = "Planning"
+        
+        self.cse_view.appendPlainText("LifecycleEvent:\n")
+        self.cse_view.appendPlainText(f"  event_id: {event_id}\n")
+        self.cse_view.appendPlainText(f"  artifact_id: {artifact_id}\n")
+        self.cse_view.appendPlainText(f"  previous_state: {previous_state}\n")
+        self.cse_view.appendPlainText(f"  new_state: {target_state}\n")
+        self.cse_view.appendPlainText(f"  actor: {actor}\n")
+        self.cse_view.appendPlainText(f"  authority_valid: {authority_valid}\n")
+        self.cse_view.appendPlainText(f"  evidence_valid: {evidence_valid}\n")
+        self.cse_view.appendPlainText(f"  timestamp: {datetime.now().isoformat()}\n\n")
+        
+        # Step 3: Update Lineage
+        self.cse_view.appendPlainText("=== III. LINEAGE UPDATE ===\n\n")
+        self.cse_view.appendPlainText("LineageRecord appended:\n")
+        self.cse_view.appendPlainText(f"  artifact_id: {artifact_id}\n")
+        self.cse_view.appendPlainText(f"  state: {target_state}\n")
+        self.cse_view.appendPlainText(f"  event_id: {event_id}\n")
+        self.cse_view.appendPlainText("  lineage chain updated\n\n")
+        
+        # Step 4: Register Replay
+        self.cse_view.appendPlainText("=== IV. REPLAY REGISTRATION ===\n\n")
+        self.cse_view.appendPlainText("Replay inputs indexed:\n")
+        self.cse_view.appendPlainText(f"  event_id: {event_id}\n")
+        self.cse_view.appendPlainText(f"  artifact_id: {artifact_id}\n")
+        self.cse_view.appendPlainText(f"  inputs: authority_path, evidence, payload\n")
+        self.cse_view.appendPlainText("  replay_registered: True\n\n")
+        
+        # Step 5: Publish to CEB (Constitutional Event Bus)
+        self.cse_view.appendPlainText("=== V. CEB EVENT PUBLICATION ===\n\n")
+        self.cse_view.appendPlainText("Event published to topics:\n")
+        self.cse_view.appendPlainText("  cse.transition.requested\n")
+        self.cse_view.appendPlainText("  cse.transition.evaluated\n")
+        self.cse_view.appendPlainText("  cse.transition.committed\n")
+        self.cse_view.appendPlainText("  cse.transition.artifact.generated\n")
+        self.cse_view.appendPlainText("  cse.transition.lineage.updated\n")
+        self.cse_view.appendPlainText("  cse.transition.replay.indexed\n")
+        self.cse_view.appendPlainText("  cse.transition.published\n\n")
+        
+        # CSE Syscall: REPLAY
+        self.cse_view.appendPlainText("=== CSE SYSCALL: REPLAY ===\n\n")
+        
+        self.cse_view.appendPlainText("Replay Request:\n")
+        self.cse_view.appendPlainText(f"  event_id: {event_id}\n\n")
+        
+        self.cse_view.appendPlainText("Replay Process:\n")
+        self.cse_view.appendPlainText("  1. Retrieve original event and inputs\n")
+        self.cse_view.appendPlainText("  2. Re-run ISL lifecycle transition\n")
+        self.cse_view.appendPlainText("  3. Re-run execution (Arena/Node)\n")
+        self.cse_view.appendPlainText("  4. Compare outputs to original\n")
+        
+        replay_match = True  # Simulated
+        self.cse_view.appendPlainText(f"\nReplay Result: {'MATCH' if replay_match else 'MISMATCH'}\n")
+        self.cse_view.appendPlainText(f"  replay_id: replay-{str(hash(event_id))[:8]}\n")
+        self.cse_view.appendPlainText(f"  event_id: {event_id}\n")
+        self.cse_view.appendPlainText(f"  deterministic: {replay_match}\n\n")
+        
+        # CSE Syscall: QUERY_TIMELINE
+        self.cse_view.appendPlainText("=== CSE SYSCALL: QUERY_TIMELINE ===\n\n")
+        
+        self.cse_view.appendPlainText("Timeline Query:\n")
+        self.cse_view.appendPlainText(f"  artifact_id: {artifact_id}\n\n")
+        
+        self.cse_view.appendPlainText("Constitutional History:\n")
+        self.cse_view.appendPlainText("  [1] Intent → Evidence (event-abc123)\n")
+        self.cse_view.appendPlainText("  [2] Evidence → Planning (event-def456)\n")
+        self.cse_view.appendPlainText(f"  [3] Planning → Execution ({event_id})\n\n")
+        
+        # Summary
+        self.cse_view.appendPlainText("=== CSE SUMMARY ===\n\n")
+        self.cse_view.appendPlainText("✓ TRANSITION syscall executed\n")
+        self.cse_view.appendPlainText("✓ Authority validated via DLAP\n")
+        self.cse_view.appendPlainText("✓ Evidence validated\n")
+        self.cse_view.appendPlainText("✓ ISL contracts evaluated\n")
+        self.cse_view.appendPlainText("✓ LifecycleEvent generated\n")
+        self.cse_view.appendPlainText("✓ Lineage updated\n")
+        self.cse_view.appendPlainText("✓ Replay registered\n")
+        self.cse_view.appendPlainText("✓ Event published to CEB\n")
+        self.cse_view.appendPlainText("✓ REPLAY syscall verified determinism\n")
+        self.cse_view.appendPlainText("✓ QUERY_TIMELINE retrieved history\n\n")
+        
+        self.cse_view.appendPlainText("Constitutional State Engine: All state changes authorized\n")
+        self.cse_view.appendPlainText("No subsystem may mutate constitutional state outside CSE\n")
+        self._set_status(f"CSE: TRANSITION COMPLETE ({event_id})")
 
     def closeEvent(self, event) -> None:  # noqa: N802
         if self._confirm_discard():

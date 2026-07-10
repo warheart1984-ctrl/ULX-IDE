@@ -21,6 +21,11 @@ A professional desktop development environment for governed systems, integrating
 - **Nova Studio Lineage Sync**: Export audit outputs for lineage visualization in Nova Studio
 - **Promotion v1.0 Constitutional Elevation Protocol**: Transform substrations into stable substrates through evidence, replay, governance review, and lineage certification
 - **Promotion v2.0 Constitutional Consensus Protocol**: Full federated promotion system with multi-node consensus, quorum voting, challenge resolution, and rollback capabilities
+- **Constitutional Courts (Meta-Governance)**: Adjudicate escalated challenges, conflicting promotions, and corruption cases with court decision records
+- **Constitutional Knowledge Layer (Governed Epistemology)**: Treat knowledge as constitutional artifacts with evidence chains and promotion/deprecation
+- **Constitutional OS (Full Constitutional Operating System)**: Governed processes, resources, and scheduling with constitutional authority paths
+- **CSE (Constitutional State Engine)**: Central authority for all constitutional state transitions with TRANSITION, REPLAY, and QUERY_TIMELINE syscalls
+- **CLE (Constitutional Lifecycle Engine)**: Universal lifecycle for all artifacts (Intent → Evidence → Planning → Execution → Validation → Replay → Federated Review → Quorum → Promotion → Stewardship → Evolution)
 
 ## Installation
 
